@@ -18,12 +18,13 @@ namespace PeopleManagement.Infrastructure.Repositories
 
         public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            var person = await appDbContext.People.FindAsync(new object[] { id }, cancellationToken);
+            Person person = await appDbContext.People.FindAsync(new object[] { id }, cancellationToken);
 
             if (person == null)
                 return false;
 
-            appDbContext.People.Remove(person);
+            person.DeletionAt = DateTime.Now;
+            appDbContext.People.Update(person);
             await appDbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
@@ -35,19 +36,19 @@ namespace PeopleManagement.Infrastructure.Repositories
 
         public async Task<Person?> GetByIdAsync(long id, CancellationToken cancellationToken)
         {
-            return await appDbContext.People.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+            return await appDbContext.People.FirstOrDefaultAsync(person => person.Id == id, cancellationToken);
         }
 
         public async Task<List<Person>> SearchAsync(string query, CancellationToken cancellationToken)
         {
             return await appDbContext.People
-                .Where(p => p.Name.Contains(query) || p.Email.Contains(query))
+                .Where(person => person.Name.Contains(query) || person.Email.Contains(query))
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Person> UpdateAsync(Person entity, CancellationToken cancellationToken)
+        public async Task<Person> UpdateAsync(long id,Person entity, CancellationToken cancellationToken)
         {
-            var existing = await appDbContext.People.FindAsync(new object[] { entity.Id }, cancellationToken);
+            var existing = await appDbContext.People.FindAsync(new object[] { id }, cancellationToken);
 
             if (existing == null)
                 throw new InvalidOperationException("Pessoa não encontrada.");

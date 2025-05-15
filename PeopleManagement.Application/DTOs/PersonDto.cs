@@ -1,4 +1,5 @@
 ﻿using PeopleManagement.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PeopleManagement.Application.DTOs
 {
@@ -10,6 +11,7 @@ namespace PeopleManagement.Application.DTOs
 
         public string Email { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
         public string? Naturality { get; set; }

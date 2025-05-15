@@ -9,6 +9,13 @@ namespace PeopleManagement.Application.Mapping
         public PersonProfileMap()
         {
             CreateMap<Person, PersonDto>();
+
+            CreateMap<Person, PersonDto>()
+                .ReverseMap()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletionAt, opt => opt.Ignore());
         }
     }
 }

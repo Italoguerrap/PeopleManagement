@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc.Versioning;
 using PeopleManagement.API.PipelineExtensions;
+using PeopleManagement.Application.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.AddVersioning();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddAutoMapper(typeof(PersonProfileMap).Assembly);
 
 var app = builder.Build();
 

@@ -12,7 +12,7 @@ namespace PeopleManagement.Application.Interfaces
 
         Task<T> AddAsync(T entity, CancellationToken cancellationToken);
 
-        Task<T> UpdateAsync(T entity, CancellationToken cancellationToken);
+        Task<T> UpdateAsync(long id, T entity, CancellationToken cancellationToken);
 
         Task<bool> DeleteAsync(long id, CancellationToken cancellationToken);
     }
