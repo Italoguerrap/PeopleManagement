@@ -1,5 +1,8 @@
 using PeopleManagement.API.PipelineExtensions;
+using PeopleManagement.Application.Interfaces;
 using PeopleManagement.Application.Mapping;
+using PeopleManagement.Application.Validations;
+using PeopleManagement.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,8 @@ builder.AddVersioning();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddAutoMapper(typeof(PersonProfileMap).Assembly);
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<PersonEntityValidator>();
 
 var app = builder.Build();
 

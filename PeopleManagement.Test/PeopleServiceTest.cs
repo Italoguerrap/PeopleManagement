@@ -3,6 +3,7 @@ using Moq;
 using PeopleManagement.Application.DTOs;
 using PeopleManagement.Application.Interfaces;
 using PeopleManagement.Application.Services;
+using PeopleManagement.Application.Validations;
 using PeopleManagement.Domain.Entites;
 using PeopleManagement.Domain.Enums;
 
@@ -18,8 +19,10 @@ namespace PeopleManagement.Test
         {
             _personRepositoryMock = new Mock<IPersonRepository>();
             _mapperMock = new Mock<IMapper>();
-            _peopleService = new PeopleService(_personRepositoryMock.Object, _mapperMock.Object);
+            var validator = new PersonEntityValidator(_personRepositoryMock.Object);
+            _peopleService = new PeopleService(_personRepositoryMock.Object, _mapperMock.Object, validator);
         }
+
 
         [Fact]
         public async Task SearchAsync_ShouldReturnMappedDtos()

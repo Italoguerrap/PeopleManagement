@@ -66,5 +66,13 @@ namespace PeopleManagement.Infrastructure.Repositories
             await appDbContext.SaveChangesAsync(cancellationToken);
             return existing;
         }
+
+        public async Task<Person?> GetByCpfAsync(string cpf, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(cpf))
+                return null;
+
+            return await appDbContext.People.FirstOrDefaultAsync(p => p.CPF == cpf, cancellationToken);
+        }
     }
 }

@@ -11,5 +11,7 @@ namespace PeopleManagement.Application.Interfaces
         Task<PersonDto> UpdateAsync(long id, PersonDto personDto, CancellationToken cancellationToken);
 
         Task<PersonDto> DeleteAsync(long id, CancellationToken cancellationToken);
+
+        Task<PersonDto> GetByIdAsync(long id, CancellationToken cancellationToken);
     }
 }
