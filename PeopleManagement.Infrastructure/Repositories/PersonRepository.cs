@@ -74,9 +74,9 @@ namespace PeopleManagement.Infrastructure.Repositories
                 queryable = queryable.Where(person => person.Naturality.Contains(query.Naturality));
             }
 
-            if (!string.IsNullOrWhiteSpace(query.Country))
+            if (!string.IsNullOrWhiteSpace(query.Nationality))
             {
-                queryable = queryable.Where(person => person.Country.Contains(query.Country));
+                queryable = queryable.Where(person => person.Nationality.Contains(query.Nationality));
             }
 
             if (query.Gender is not null)
@@ -96,7 +96,7 @@ namespace PeopleManagement.Infrastructure.Repositories
             existing.Email = entity.Email;
             existing.DateOfBirth = entity.DateOfBirth;
             existing.Naturality = entity.Naturality;
-            existing.Country = entity.Country;
+            existing.Nationality = entity.Nationality;
             existing.CPF = entity.CPF;
             existing.UpdatedAt = DateTime.Now;
 

@@ -14,7 +14,7 @@ namespace PeopleManagement.Domain.Entities
 
         public string? Naturality { get; set; }
 
-        public string? Country { get; set; }
+        public string? Nationality { get; set; }
 
         public string? CPF { get; set; }
     }

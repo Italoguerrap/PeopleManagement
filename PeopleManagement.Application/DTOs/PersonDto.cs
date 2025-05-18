@@ -10,6 +10,6 @@ namespace PeopleManagement.Application.DTOs
         public string Email { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? Naturality { get; set; }
-        public string? Country { get; set; }
+        public string? Nationality { get; set; }
     }
 }

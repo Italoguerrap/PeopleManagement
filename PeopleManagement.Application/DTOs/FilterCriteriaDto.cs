@@ -9,7 +9,7 @@ namespace PeopleManagement.Application.DTOs
         public GenderType? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public string? Naturality { get; set; }
-        public string? Country { get; set; }
+        public string? Nationality { get; set; }
         public string? CPF { get; set; }
 
         public bool IsEmpty
@@ -21,7 +21,7 @@ namespace PeopleManagement.Application.DTOs
                     && Gender is null
                     && DateOfBirth is null
                     && string.IsNullOrWhiteSpace(Naturality)
-                    && string.IsNullOrWhiteSpace(Country)
+                    && string.IsNullOrWhiteSpace(Nationality)
                     && string.IsNullOrWhiteSpace(CPF);
             }
         }
