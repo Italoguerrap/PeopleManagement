@@ -1,4 +1,4 @@
-﻿namespace PeopleManagement.Domain.Entites
+﻿namespace PeopleManagement.Domain.Entities
 {
     public class BaseEntity
     {

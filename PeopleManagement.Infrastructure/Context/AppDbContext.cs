@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using PeopleManagement.Domain.Entites;
+using PeopleManagement.Domain.Entities;
 
 namespace PeopleManagement.Infrastructure.Context
 {

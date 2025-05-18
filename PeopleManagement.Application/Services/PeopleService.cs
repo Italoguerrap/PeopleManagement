@@ -1,90 +1,95 @@
 ﻿using AutoMapper;
-using FluentValidation;
-using FluentValidation.Results;
 using PeopleManagement.Application.DTOs;
 using PeopleManagement.Application.Interfaces;
-using PeopleManagement.Application.Validations;
-using PeopleManagement.Domain.Entites;
+using PeopleManagement.Application.Mapping;
+using PeopleManagement.Domain.Entities;
 
 namespace PeopleManagement.Application.Services
 {
-    public class PeopleService(IPersonRepository personRepository, IMapper mapper, PersonEntityValidator _validator ) : IPeopleService
-    {   
-        public async Task<List<PersonDto>> SearchAsync(string query, CancellationToken cancellationToken)
+    public class PeopleService(IPersonRepository personRepository, IMapper mapper) : IPeopleService
+    {
+        public async Task<List<PersonDto>> SearchAsync(FilterCriteriaDto query, CancellationToken cancellationToken)
         {
-            List<Person> people;
+            try
+            {
+                List<Person> people = query.IsEmpty
+                    ? await personRepository.GetAllAsync(cancellationToken)
+                    : await personRepository.QueryAsync(query, cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(query))
-                people = await personRepository.GetAllAsync(cancellationToken);
-            else
-                people = await personRepository.SearchAsync(query, cancellationToken);
+                return [.. people.Select(mapper.Map<PersonDto>)];
+            }
+            catch (Exception ex)
+            {
+                throw new PeopleManagementException($"Erro ao processar a consulta: {ex.Message}", ex);
+            }
+        }
 
-            return [.. people.Select(mapper.Map<PersonDto>)];
-        }        
-        
         public async Task AddAsync(PersonDto personDto, CancellationToken cancellationToken)
         {
-            if (personDto == null)
-                throw new ArgumentNullException(nameof(personDto), "Dados da pessoa são obrigatórios.");
+            if (personDto is null)
+                throw new PeopleManagementException("Dados da pessoa são obrigatórios.");
+
+            Person? existingPerson = await personRepository.GetByCpfAsync(personDto.CPF, cancellationToken);
+
+            if (existingPerson is not null)
+            {
+                throw new PeopleManagementException("Este CPF já está cadastrado");
+            }
 
             Person person = mapper.Map<Person>(personDto);
 
-            await ValidatePersonAsync(person, cancellationToken);
-
             await personRepository.AddAsync(person, cancellationToken);
         }
-        
-        public async Task<PersonDto> UpdateAsync(long id, PersonDto personDto, CancellationToken cancellationToken)
+
+        public async Task<PersonDto> UpdateAsync(string cpf, PersonDto personDto, CancellationToken cancellationToken)
         {
-            if (personDto == null)
-                throw new ArgumentNullException(nameof(personDto), "Dados da pessoa são obrigatórios.");
+            ArgumentException.ThrowIfNullOrWhiteSpace(cpf);
 
-            Person person = await personRepository.GetByIdAsync(id, cancellationToken);
-            
-            if (person == null)
-                throw new InvalidOperationException($"Pessoa não encontrada.");
+            if (personDto is null)
+                throw new PeopleManagementException("Dados da pessoa são obrigatórios.");
 
+            Person person = await personRepository.GetByCpfAsync(cpf, cancellationToken) ?? throw new PeopleManagementException($"Pessoa não encontrada.");
+
+            long personId = person.Id;
+            personDto.MergeInto(person);
             person = mapper.Map<Person>(personDto);
-            person.Id = id;
+            person.Id = personId;
 
-            await ValidatePersonAsync(person, cancellationToken);
+            if (cpf != personDto.CPF)
+            {
+                Person? existingPerson = await personRepository.GetByCpfAsync(personDto.CPF, cancellationToken);
+                if (existingPerson is not null)
+                {
+                    throw new PeopleManagementException("Este CPF já está cadastrado");
+                }
+            }
 
-            person = await personRepository.UpdateAsync(id, person, cancellationToken);
+            person = await personRepository.UpdateAsync(personId, person, cancellationToken);
 
             return mapper.Map<PersonDto>(person);
         }
-        
-        public async Task<PersonDto> DeleteAsync(long id, CancellationToken cancellationToken)
+
+        public async Task<PersonDto> DeleteAsync(string cpf, CancellationToken cancellationToken)
         {
-            Person person = await personRepository.GetByIdAsync(id, cancellationToken);
+            ArgumentException.ThrowIfNullOrWhiteSpace(cpf);
 
-            if (person == null)
-                throw new InvalidOperationException($"Pessoa não encontrada.");
+            Person person = await personRepository.GetByCpfAsync(cpf, cancellationToken) ?? throw new PeopleManagementException($"Pessoa não encontrada.");
 
-            bool deleted = await personRepository.DeleteAsync(id, cancellationToken);
-            
+            bool deleted = await personRepository.DeleteAsync(person.Id, cancellationToken);
+
             if (!deleted)
-                throw new InvalidOperationException($"Não foi possível excluir a pessoa.");
+                throw new PeopleManagementException($"Não foi possível excluir a pessoa.");
 
             return mapper.Map<PersonDto>(person);
         }
 
-        public async Task<PersonDto> GetByIdAsync(long id, CancellationToken cancellationToken)
+        public async Task<PersonDto> GetByIdAsync(string cpf, CancellationToken cancellationToken)
         {
-            Person person = await personRepository.GetByIdAsync(id, cancellationToken);
+            ArgumentException.ThrowIfNullOrWhiteSpace(cpf);
 
-            if (person == null)
-                throw new InvalidOperationException($"Pessoa não encontrada.");
+            Person? person = await personRepository.GetByCpfAsync(cpf, cancellationToken) ?? throw new PeopleManagementException($"Pessoa não encontrada.");
 
             return mapper.Map<PersonDto>(person);
-        }
-
-        private async Task ValidatePersonAsync(Person person, CancellationToken cancellationToken)
-        {
-            ValidationResult validationResult = await _validator.ValidateAsync(person, cancellationToken);
-            
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
         }
     }
 }

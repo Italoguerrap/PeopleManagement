@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PeopleManagement.Application.DTOs;
 using PeopleManagement.Application.Interfaces;
-using PeopleManagement.Domain.Entites;
+using PeopleManagement.Domain.Entities;
 using PeopleManagement.Infrastructure.Context;
 
 namespace PeopleManagement.Infrastructure.Repositories
@@ -18,40 +19,77 @@ namespace PeopleManagement.Infrastructure.Repositories
 
         public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            Person person = await appDbContext.People.FindAsync(new object[] { id }, cancellationToken);
+            Person? person = await appDbContext.People.FindAsync([id], cancellationToken);
 
             if (person == null)
                 return false;
 
             person.DeletionAt = DateTime.Now;
-            appDbContext.People.Update(person);
+
             await appDbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
 
         public async Task<List<Person>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await appDbContext.People.ToListAsync(cancellationToken);
+            return await appDbContext.People
+                .Where(person => person.DeletionAt == null)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Person?> GetByIdAsync(long id, CancellationToken cancellationToken)
         {
-            return await appDbContext.People.FirstOrDefaultAsync(person => person.Id == id, cancellationToken);
-        }
-
-        public async Task<List<Person>> SearchAsync(string query, CancellationToken cancellationToken)
-        {
             return await appDbContext.People
-                .Where(person => person.Name.Contains(query) || person.Email.Contains(query))
-                .ToListAsync(cancellationToken);
+                .Where(person => person.DeletionAt == null)
+                .FirstOrDefaultAsync(person => person.Id == id && person.DeletionAt == null, cancellationToken);
         }
 
-        public async Task<Person> UpdateAsync(long id,Person entity, CancellationToken cancellationToken)
+        public async Task<List<Person>> QueryAsync(FilterCriteriaDto query, CancellationToken cancellationToken)
         {
-            var existing = await appDbContext.People.FindAsync(new object[] { id }, cancellationToken);
+            IQueryable<Person> queryable = appDbContext.People.Where(person => person.DeletionAt == null);
 
-            if (existing == null)
-                throw new InvalidOperationException("Pessoa não encontrada.");
+            if (!string.IsNullOrWhiteSpace(query.Name))
+            {
+                queryable = queryable.Where(person => person.Name.Contains(query.Name));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Email))
+            {
+                queryable = queryable.Where(person => person.Email.Contains(query.Email));
+            }
+
+            if (query.DateOfBirth.HasValue)
+            {
+                var dateOfBirth = query.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
+                queryable = queryable.Where(person => person.DateOfBirth == dateOfBirth);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.CPF))
+            {
+                queryable = queryable.Where(person => person.CPF == query.CPF);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Naturality))
+            {
+                queryable = queryable.Where(person => person.Naturality.Contains(query.Naturality));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Country))
+            {
+                queryable = queryable.Where(person => person.Country.Contains(query.Country));
+            }
+
+            if (query.Gender is not null)
+            {
+                queryable = queryable.Where(person => person.Gender == query.Gender);
+            }
+
+            return await queryable.ToListAsync(cancellationToken);
+        }
+
+        public async Task<Person> UpdateAsync(long id, Person entity, CancellationToken cancellationToken)
+        {
+            Person? existing = await appDbContext.People.FindAsync([id], cancellationToken) ?? throw new InvalidOperationException("Pessoa não encontrada.");
 
             existing.Name = entity.Name;
             existing.Gender = entity.Gender;
@@ -60,9 +98,8 @@ namespace PeopleManagement.Infrastructure.Repositories
             existing.Naturality = entity.Naturality;
             existing.Country = entity.Country;
             existing.CPF = entity.CPF;
-            existing.UpdatedAt = DateTime.UtcNow;
+            existing.UpdatedAt = DateTime.Now;
 
-            appDbContext.People.Update(existing);
             await appDbContext.SaveChangesAsync(cancellationToken);
             return existing;
         }
@@ -72,7 +109,7 @@ namespace PeopleManagement.Infrastructure.Repositories
             if (string.IsNullOrWhiteSpace(cpf))
                 return null;
 
-            return await appDbContext.People.FirstOrDefaultAsync(p => p.CPF == cpf, cancellationToken);
+            return await appDbContext.People.Where(person => person.DeletionAt == null).FirstOrDefaultAsync(p => p.CPF == cpf, cancellationToken);
         }
     }
 }

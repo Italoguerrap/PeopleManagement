@@ -1,12 +1,10 @@
-﻿using PeopleManagement.Domain.Entites;
+﻿using PeopleManagement.Domain.Entities;
 
 namespace PeopleManagement.Application.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        Task<List<T>> GetAllAsync(CancellationToken cancellationToken);
-
-        Task<List<T>> SearchAsync(string query, CancellationToken cancellationToken);
+        Task<List<T>> GetAllAsync(CancellationToken cancellationToken);        
 
         Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken);
 

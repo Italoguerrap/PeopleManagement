@@ -1,27 +1,29 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using PeopleManagement.API.Middlewares;
 using PeopleManagement.API.PipelineExtensions;
-using PeopleManagement.Application.Interfaces;
-using PeopleManagement.Application.Mapping;
-using PeopleManagement.Application.Validations;
-using PeopleManagement.Infrastructure.Repositories;
+using PeopleManagement.API.Validations;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.AddVersioning();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
-builder.Services.AddAutoMapper(typeof(PersonProfileMap).Assembly);
-builder.Services.AddScoped<IPersonRepository, PersonRepository>();
-builder.Services.AddScoped<PersonEntityValidator>();
+builder.AddVersioning()
+       .AddInfrastructure(builder.Configuration)
+       .AddApplication()
+       .AddAutoMapper(Assembly.GetExecutingAssembly())
+       .AddCorsPolicy(builder.Configuration)
+       .AddFluentValidationAutoValidation();
+
+builder.Services.AddValidatorsFromAssemblyContaining<GetPeopleQueryRequestValidator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors("AllowLocalhostFrontend");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -33,5 +35,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.Run();

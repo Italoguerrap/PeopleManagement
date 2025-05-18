@@ -11,6 +11,6 @@
         public const string DateOfBirthInvalid = "Data de nascimento inválida.";
         public const string CPFRequired = "CPF é obrigatório.";
         public const string CPFInvalid = "CPF inválido.";
-        public const string CPFDuplicate = "CPF já cadastrado no sistema.";
+        public const string CPFDuplicate = "Não é possível utilizar um CPF que já pertence a outro usuário..";
     }
 }

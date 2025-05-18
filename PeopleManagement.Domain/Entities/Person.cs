@@ -1,7 +1,6 @@
 ﻿using PeopleManagement.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
-namespace PeopleManagement.Domain.Entites
+namespace PeopleManagement.Domain.Entities
 {
     public class Person : BaseEntity
     {
@@ -11,7 +10,6 @@ namespace PeopleManagement.Domain.Entites
 
         public string Email { get; set; }
 
-        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
         public string? Naturality { get; set; }
