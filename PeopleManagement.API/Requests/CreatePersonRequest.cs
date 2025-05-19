@@ -2,5 +2,5 @@
 
 public class CreatePersonRequest : PersonRequest
 {
-
+    public string Password { get; set; }
 }

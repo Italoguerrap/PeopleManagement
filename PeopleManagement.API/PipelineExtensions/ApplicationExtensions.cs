@@ -1,4 +1,5 @@
-﻿using PeopleManagement.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
+using PeopleManagement.Application.Interfaces;
 using PeopleManagement.Application.Services;
 
 namespace PeopleManagement.API.PipelineExtensions
@@ -9,6 +10,8 @@ namespace PeopleManagement.API.PipelineExtensions
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IPeopleService, PeopleService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddSingleton(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
             return services;
         }
     }

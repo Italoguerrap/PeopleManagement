@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using PeopleManagement.Application.DTOs;
 using PeopleManagement.Application.Interfaces;
 using PeopleManagement.Application.Mapping;
@@ -6,7 +7,7 @@ using PeopleManagement.Domain.Entities;
 
 namespace PeopleManagement.Application.Services
 {
-    public class PeopleService(IPersonRepository personRepository, IMapper mapper) : IPeopleService
+    public class PeopleService(IPersonRepository personRepository, IPasswordHasher<Person> passwordHasher, IMapper mapper) : IPeopleService
     {
         public async Task<List<PersonDto>> SearchAsync(FilterCriteriaDto query, CancellationToken cancellationToken)
         {
@@ -37,6 +38,8 @@ namespace PeopleManagement.Application.Services
             }
 
             Person person = mapper.Map<Person>(personDto);
+
+            person.PasswordHash = passwordHasher.HashPassword(person, personDto.Password);
 
             await personRepository.AddAsync(person, cancellationToken);
         }

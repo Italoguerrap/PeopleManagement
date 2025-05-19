@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PeopleManagement.Application.Interfaces;
+using PeopleManagement.Infrastructure.Auth;
 using PeopleManagement.Infrastructure.Context;
 using PeopleManagement.Infrastructure.Repositories;
 
@@ -12,6 +13,7 @@ namespace PeopleManagement.API.PipelineExtensions
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite("Data Source=databse.dat"));
             services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<ITokenService, TokenService>();
             return services;
         }
     }

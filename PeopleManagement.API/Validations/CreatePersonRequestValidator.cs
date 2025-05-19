@@ -23,5 +23,10 @@ public class CreatePersonRequestValidator : BasePersonValidator<CreatePersonRequ
             .WithMessage("Date of birth must be in the past")
             .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today.AddYears(-150)))
             .WithMessage("Too old");
+
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage("Password is required")
+            .MinimumLength(4);
     }
 }

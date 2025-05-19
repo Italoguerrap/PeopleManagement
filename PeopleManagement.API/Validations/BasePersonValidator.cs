@@ -24,9 +24,8 @@ public class BasePersonValidator<T> : AbstractValidator<T> where T : PersonReque
 
 
         RuleFor(x => x.CPF)
-            .NotEmpty()
-            .Must(CpfValidator.IsCpfValid)
-            .WithMessage("CPF inválido")
+            .NotEmpty().WithMessage("CPF inválido")
+            .Must(CpfValidator.IsCpfValid).WithMessage("CPF inválido")
             .When(x => !string.IsNullOrWhiteSpace(x.CPF));
 
         RuleFor(x => x.Email)
