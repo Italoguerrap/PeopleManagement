@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace PeopleManagement.API.PipelineExtensions
+﻿namespace PeopleManagement.API.PipelineExtensions
 {
     public static class CorsExtensions
     {
@@ -12,7 +8,7 @@ namespace PeopleManagement.API.PipelineExtensions
             {
                 options.AddPolicy("AllowLocalhostFrontend", policy =>
                 {
-                    string frontendUrl = configuration["Cors:FrontendUrl"] ?? "http://localhost:5176";
+                    string frontendUrl = configuration["Cors:FrontendUrl"];
 
                     policy
                         .WithOrigins(frontendUrl)

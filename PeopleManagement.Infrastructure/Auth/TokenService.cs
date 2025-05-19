@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PeopleManagement.Application.Interfaces;
 using PeopleManagement.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace PeopleManagement.Infrastructure.Auth;
 
-public class TokenService : ITokenService
+public class TokenService(IConfiguration configuration) : ITokenService
 {
     public Token GenerateToken(long userId)
     {
@@ -19,12 +20,13 @@ public class TokenService : ITokenService
         ];
 
         JwtSecurityTokenHandler handler = new();
-        byte[] key = Encoding.UTF8.GetBytes("PeopleManagementSecretKey1234567890");
+        byte[] key = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("A chave JWT não está configurada."));
+
         SecurityTokenDescriptor securityTokenDescriptor = new()
         {
             Subject = new ClaimsIdentity(claims),
-            Issuer = "PeopleManagement",
-            Audience = "PeopleManagement.API",
+            Issuer = configuration["Jwt:Issuer"],
+            Audience = configuration["Jwt:Audience"],
             Expires = DateTime.UtcNow.AddHours(1),
             NotBefore = DateTime.UtcNow,
             IssuedAt = DateTime.UtcNow,
