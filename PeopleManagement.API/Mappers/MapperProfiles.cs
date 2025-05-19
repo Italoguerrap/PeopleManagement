@@ -12,7 +12,8 @@ namespace PeopleManagement.API.Mappers
             CreateMap<GetPeopleQueryRequest, FilterCriteriaDto>();
 
             CreateMap<CreatePersonRequest, PersonDto>()
-                .ForMember(dest => dest.DateOfBirth, o => o.MapFrom(src => src.DateOfBirth == null ? default : src.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue)));
+                .ForMember(dest => dest.DateOfBirth, o => o.MapFrom(src => src.DateOfBirth == null ? default : src.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.CPF, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CPF) ? null : Regex.Replace(src.CPF, @"\D", "")));
 
             CreateMap<UpdatePersonRequest, PersonDto>()
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth == null ? default : src.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue)))

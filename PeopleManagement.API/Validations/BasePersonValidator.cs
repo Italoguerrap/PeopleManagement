@@ -47,16 +47,6 @@ public class BasePersonValidator<T> : AbstractValidator<T> where T : PersonReque
             .Must(n => Countries.CountryNames
                 .Any(c => string.Equals(c, n, StringComparison.OrdinalIgnoreCase)))
             .WithMessage("País inválido")
-            .When(x => !string.IsNullOrWhiteSpace(x.Nationality));
-
-        RuleSet("v1", () => { });
-
-        RuleSet("v2", () =>
-        {
-            RuleFor(x => x.Address)
-                .NotEmpty()
-                .WithMessage("O endereço não pode ser vazio")
-                .When(x => !string.IsNullOrWhiteSpace(x.Address));
-        });
+            .When(x => !string.IsNullOrWhiteSpace(x.Nationality));        
     }
 }

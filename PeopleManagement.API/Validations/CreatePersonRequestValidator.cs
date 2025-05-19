@@ -28,5 +28,12 @@ public class CreatePersonRequestValidator : BasePersonValidator<CreatePersonRequ
             .NotEmpty()
             .WithMessage("Password is required")
             .MinimumLength(4);
+
+        RuleSet("v2", () =>
+        {
+            RuleFor(x => x.Address)
+                .NotEmpty()
+                .WithMessage("O endereço não pode ser vazio");
+        });
     }
 }

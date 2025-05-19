@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Versioning;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Options;
 
 namespace PeopleManagement.API.PipelineExtensions
 {
@@ -8,10 +10,10 @@ namespace PeopleManagement.API.PipelineExtensions
         {
             return builder.Services.AddApiVersioning(static config =>
             {
-                config.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
                 config.AssumeDefaultVersionWhenUnspecified = true;
+                config.DefaultApiVersion = new ApiVersion(1, 0);
                 config.ReportApiVersions = true;
-                config.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                config.ApiVersionReader = new UrlSegmentApiVersionReader();
             });
         }
     }

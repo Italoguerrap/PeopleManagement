@@ -10,7 +10,6 @@ public class AuthService(IPersonRepository personRepository, IMapper mapper, IPa
 {
     public async Task<TokenDto> AuthenticateAsync(string cpf, string password, CancellationToken cancellationToken)
     {
-        // Validar email e senha
         Person? person = await personRepository.GetByCpfAsync(cpf, cancellationToken);
 
         person ??= new Person { PasswordHash = string.Empty };
