@@ -8,7 +8,7 @@
             {
                 options.AddPolicy("AllowLocalhostFrontend", policy =>
                 {
-                    string frontendUrl = configuration["Cors:FrontendUrl"];
+                    string frontendUrl = configuration["Cors:FrontendUrl"]!;
 
                     policy
                         .WithOrigins(frontendUrl)

@@ -56,10 +56,7 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "People API V1");
         c.SwaggerEndpoint("/swagger/v2/swagger.json", "People API V2");
-
-        // Opcional: define a versão padrão exibida
-        //c.DefaultModelsExpandDepth(-1); // Esconde a aba de "Schemas"
-        c.RoutePrefix = "swagger"; // URL base: /swagger/index.html
+        c.RoutePrefix = "swagger";
     });
 }
 
