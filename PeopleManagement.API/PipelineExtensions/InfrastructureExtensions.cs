@@ -10,8 +10,9 @@ namespace PeopleManagement.API.PipelineExtensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var connString = configuration["ConnectionStrings:database"];
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite("Data Source=databse.dat"));
+                options.UseSqlServer(connString));
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<ITokenService, TokenService>();
             return services;
